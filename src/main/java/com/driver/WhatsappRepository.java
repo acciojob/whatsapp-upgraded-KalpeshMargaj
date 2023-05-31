@@ -117,8 +117,8 @@ public class WhatsappRepository {
                 userPresent=true;
                 l.remove(user);
                 ans = ans + l.size();
-                groupUserMap.put(group,l);
             }
+            groupUserMap.put(group,l);
         }
         if(!userPresent)
         {
