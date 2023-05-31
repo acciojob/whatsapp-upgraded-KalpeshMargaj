@@ -2,6 +2,7 @@ package com.driver;
 
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Repository
@@ -101,11 +102,68 @@ public class WhatsappRepository {
         throw new Exception("Group does not exist");
     }
 
-    public int removeUser(User user) {
-        return 0;
+    public int removeUser(User user) throws Exception {
+        int ans = 0;
+        boolean userPresent = false;
+        for(Group group:groupUserMap.keySet())
+        {
+            List<User> l = groupUserMap.get(group);
+            if(l.contains(user))
+            {
+                if(adminMap.get(group)==user)
+                {
+                    throw new Exception("User is admin");
+                }
+                userPresent=true;
+                l.remove(user);
+                ans = ans + l.size();
+                groupUserMap.put(group,l);
+            }
+        }
+        if(!userPresent)
+        {
+            throw new Exception("User not found");
+        }
+        for(Group group:groupMessageMap.keySet())
+        {
+            List<Message>  l= groupMessageMap.get(group);
+            for(Message message:l)
+            {
+                if(senderMap.get(message)==user)
+                {
+                    l.remove(message);
+                    senderMap.remove(message);
+                }
+                ans = ans + l.size();
+            }
+            groupMessageMap.put(group,l);
+        }
+        return ans;
     }
 
-    public String findMessage(Date start, Date end, int k) {
-        return "group doesn't exit.";
+    public String findMessage(Date start, Date end, int k) throws Exception {
+        String ans = "";
+        Date latest  = new Date(0);
+        List<Message> messages = new ArrayList<>();
+        for (List<Message> l:groupMessageMap.values()) {
+            for(Message message:l)
+            {
+                if(message.getTimestamp().after(start) && message.getTimestamp().before(end))
+                {
+                    messages.add(message);
+                    if(message.getTimestamp().after(latest))
+                    {
+                        ans = message.getContent();
+                        latest = message.getTimestamp();
+                    }
+                }
+            }
+        }
+
+        if(messages.size() < k)
+        {
+            throw new Exception("Messages are lesser");
+        }
+        return ans;
     }
 }
