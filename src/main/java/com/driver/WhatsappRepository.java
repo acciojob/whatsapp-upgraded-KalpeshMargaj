@@ -112,7 +112,7 @@ public class WhatsappRepository {
             {
                 if(adminMap.get(group)==user)
                 {
-                    throw new Exception("User is admin");
+                    throw new Exception("Cannot remove admin");
                 }
                 userPresent=true;
                 l.remove(user);
@@ -162,7 +162,7 @@ public class WhatsappRepository {
 
         if(messages.size() < k)
         {
-            throw new Exception("Messages are lesser");
+            throw new Exception("K is greater than the number of messages");
         }
         return ans;
     }
